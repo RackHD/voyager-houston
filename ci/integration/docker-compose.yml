@@ -1,0 +1,43 @@
+version: '2'
+services:
+  ipam:
+    image: rackhd/ipam:latest
+    container_name: "ipam"
+    hostname: "ipam"
+    ports:
+      - "8000:8000"
+    command: "-mongo ipam-mongo:27017"
+    links:
+      - ipam-mongo:ipam-mongo
+    depends_on:
+      - ipam-mongo
+
+  ipam-mongo:
+    image: mongo:3.2.10
+    ports:
+    - "21017:21017"
+    container_name: "ipam-mongo"
+    hostname: "ipam-mongo"
+
+  voyager-ipam-service:
+    image: rackhd/voyager-ipam-service:dev
+    container_name: "voyager-ipam-service"
+    hostname: "voyager-ipam-service"
+    depends_on:
+    - ipam-mongo
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+    - "5672:5672"
+    container_name: "rabbitmq"
+    hostname: "rabbitmq"
+
+  mysql:
+    image: mysql:8.0.0
+    ports:
+    - "3306:3306"
+    container_name: "mysql"
+    hostname: "mysql"
+    environment:
+    - MYSQL_ALLOW_EMPTY_PASSWORD=yes
